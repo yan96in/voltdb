@@ -51,7 +51,7 @@ public enum StartAction {
     final static EnumSet<StartAction> requireEmptyDirsSet =
             EnumSet.of(CREATE);
 
-    final static EnumSet<StartAction> legacySet =
+    final static EnumSet<StartAction> internalActionSet =
             EnumSet.complementOf(EnumSet.of(INITIALIZE,PROBE,GET));
 
     final String m_verb;
@@ -100,10 +100,6 @@ public enum StartAction {
 
     public boolean doesJoin() {
         return joinSet.contains(this);
-    }
-
-    public boolean isLegacy() {
-        return legacySet.contains(this);
     }
 
     public boolean doesRequireEmptyDirectories() {

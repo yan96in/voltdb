@@ -776,10 +776,10 @@ public class CommandLine extends VoltDB.Configuration
             cmdline.add("mesh"); cmdline.add(Joiner.on(',').skipNulls().join(m_coordinators));
             cmdline.add("hostcount"); cmdline.add(Integer.toString(m_hostCount));
         }
-
-        if (!m_startAction.isLegacy()) {
-            cmdline.add("voltdbroot"); cmdline.add(m_voltdbRoot.getPath());
-        }
+//TODO when touching LocalCluster
+//        if (!m_startAction.isLegacy()) {
+//            cmdline.add("voltdbroot"); cmdline.add(m_voltdbRoot.getPath());
+//        }
 
         if (m_placementGroup != null) {
             cmdline.add("placementgroup"); cmdline.add(m_placementGroup);

@@ -30,7 +30,6 @@ import java.net.URL;
 
 import org.junit.Test;
 import org.voltdb.AdhocDDLTestBase;
-import org.voltdb.StartAction;
 import org.voltdb.VoltDB;
 import org.voltdb.VoltDB.Configuration;
 import org.voltdb.VoltTable;
@@ -58,7 +57,6 @@ public class TestUpgradeWithCatalogJar extends AdhocDDLTestBase  {
         URL catalogJarPath = TestUpgradeWithCatalogJar.class.getResource("upgradeCatalogV7_4.jar");
         config.m_pathToCatalog = catalogJarPath.getPath();
         config.m_pathToDeployment = pathToDeployment;
-        config.m_startAction = StartAction.CREATE;
 
         try {
             startSystem(config);

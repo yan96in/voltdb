@@ -94,12 +94,7 @@ public class TestInitStartLocalClusterAllOutOfProcess extends JUnit4LocalCluster
         File voltDbRoot;
         cluster.startUp(true);
         //Get server specific root after startup.
-        if (cluster.isNewCli()) {
-            voltDbRoot = new File(cluster.getServerSpecificRoot("1"));
-        } else {
-            String voltDbFilePrefix = cluster.getSubRoots().get(0).getPath();
-            voltDbRoot = new File(voltDbFilePrefix, builder.getPathToVoltRoot().getPath());
-        }
+        voltDbRoot = new File(cluster.getServerSpecificRoot("1"));
         voltDbRootPath = voltDbRoot.getCanonicalPath();
         voltDBRootParentPath = voltDbRoot.getParentFile().getCanonicalPath();
         listener = cluster.getListenerAddresses().get(0);
@@ -128,13 +123,6 @@ public class TestInitStartLocalClusterAllOutOfProcess extends JUnit4LocalCluster
         }
         assertTrue(found);
         assertEquals(org.voltcore.common.Constants.DEFAULT_HEARTBEAT_TIMEOUT_SECONDS, timeout);
-
-        if (!cluster.isNewCli()) {
-            // get command is not supported in legacy cli as voltdbroot
-            // under the parent can't be determined deterministically
-            // using voltdbroot as the root of database directory
-            return;
-        }
 
         // Test get command
         testGetDeployment();

@@ -254,7 +254,6 @@ public class TestSnapshotsWithFailures extends JUnit4LocalClusterTest {
                 + " FILLER VARCHAR(" + fillerSize + " BYTES) NOT NULL,"
                 + " PRIMARY KEY (ID)); PARTITION TABLE P1 ON COLUMN ID;";
         LocalCluster cluster = new LocalCluster(jarName, sph, hostCount, kfactor, BackendTarget.NATIVE_EE_JNI);
-        cluster.setNewCli(true);
         cluster.overrideAnyRequestForValgrind();
         VoltProjectBuilder builder = new VoltProjectBuilder();
         builder.addLiteralSchema(schema);

@@ -710,9 +710,7 @@ public class VoltDB {
                 return;
             }
             // set file logger root file directory. From this point on you can use loggers
-            if (m_startAction != null && !m_startAction.isLegacy()) {
-                VoltLog4jLogger.setFileLoggerRoot(m_voltdbRoot);
-            }
+            VoltLog4jLogger.setFileLoggerRoot(m_voltdbRoot);
             /*
              *  !!! F R O M  T H I S  P O I N T  O N  Y O U  M A Y  U S E  hostLog  T O  L O G
              */
@@ -946,11 +944,17 @@ public class VoltDB {
         public boolean validate() {
             boolean isValid = true;
 
-            EnumSet<StartAction> hostNotRequred = EnumSet.of(StartAction.INITIALIZE,StartAction.GET);
             if (m_startAction == null) {
                 isValid = false;
                 hostLog.fatal("The startup action is missing (either create, recover or rejoin).");
             }
+            EnumSet<StartAction> invalidExternalstartAction = EnumSet.complementOf(
+                    EnumSet.of(StartAction.GET, StartAction.INITIALIZE, StartAction.PROBE));
+            if (invalidExternalstartAction.contains(m_startAction)) {
+                hostLog.fatal("Invalid start action " + m_startAction.verb() + " Please use init|start|get commands.");
+                return false;
+            }
+            EnumSet<StartAction> hostNotRequred = EnumSet.of(StartAction.INITIALIZE,StartAction.GET);
             if (m_leader == null && !hostNotRequred.contains(m_startAction)) {
                 isValid = false;
                 hostLog.fatal("The hostname is missing.");
@@ -964,8 +968,7 @@ public class VoltDB {
                 msg += " is an Enterprise Edition feature. An evaluation edition is available at http://voltdb.com.";
                 hostLog.fatal(msg);
             }
-            EnumSet<StartAction> requiresDeployment = EnumSet.complementOf(
-                    EnumSet.of(StartAction.REJOIN,StartAction.LIVE_REJOIN,StartAction.JOIN,StartAction.INITIALIZE, StartAction.PROBE));
+            EnumSet<StartAction> requiresDeployment = EnumSet.of(StartAction.INITIALIZE);
             // require deployment file location
             if (requiresDeployment.contains(m_startAction)) {
                 // require deployment file location (null is allowed to receive default deployment)
@@ -974,13 +977,9 @@ public class VoltDB {
                     hostLog.fatal("The deployment file location is empty.");
                 }
             }
-
-            //--paused only allowed in CREATE/RECOVER/SAFE_RECOVER
-            EnumSet<StartAction> pauseNotAllowed = EnumSet.of(StartAction.JOIN,StartAction.LIVE_REJOIN,StartAction.REJOIN);
-            if (m_isPaused && pauseNotAllowed.contains(m_startAction)) {
-                isValid = false;
-                hostLog.fatal("Starting in admin mode is only allowed when using start, create or recover.");
-            }
+            //
+            //TODO add message when mesh determines a join/rejoin/live_rejoin that paused will have no effect.
+            //
             if (!hostNotRequred.contains(m_startAction) && m_coordinators.isEmpty()) {
                 isValid = false;
                 hostLog.fatal("List of hosts is missing");
@@ -997,10 +996,6 @@ public class VoltDB {
             if (m_startAction == StartAction.PROBE && m_hostCount != UNDEFINED && m_hostCount < 0) {
                 isValid = false;
                 hostLog.fatal("\"--count\" may not be specified with negative values");
-            }
-            if (m_startAction == StartAction.JOIN && !m_enableAdd) {
-                isValid = false;
-                hostLog.fatal("\"add\" and \"noadd\" options cannot be specified at the same time");
             }
             return isValid;
         }
@@ -1240,6 +1235,7 @@ public class VoltDB {
         }
         if (CoreUtils.isJunitTest()) {
             VoltLogger log = new VoltLogger("HOST");
+            (new Exception()).printStackTrace();
             log.warn("Declining to drop a crash file during a junit test.");
         }
         // end test code

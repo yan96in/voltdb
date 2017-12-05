@@ -57,7 +57,6 @@ public class TestSnapshotDirectory extends JUnit4LocalClusterTest {
         VoltFile.recursivelyDelete(new VoltFile("/tmp/" + System.getProperty("user.name")));
         m_config = new LocalCluster("tpcc.jar", 2, 2, 1, BackendTarget.NATIVE_EE_JNI);
         m_config.setHasLocalServer(false);
-        m_config.setNewCli(false);
         TPCCProjectBuilder project = new TPCCProjectBuilder();
         project.addDefaultSchema();
         project.addDefaultPartitioning();

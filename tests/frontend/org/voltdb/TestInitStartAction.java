@@ -36,7 +36,6 @@ import java.io.FileWriter;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
-import java.util.EnumSet;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
@@ -198,49 +197,6 @@ final public class TestInitStartAction {
                     && cmdlogDH.canExecute());
             assertEquals(0, cmdlogDH.list().length);
         }
-
-        try {
-            c1 = new Configuration(new String[]{"initialize", "voltdbroot", rootDH.getPath()});
-            fail("did not detect prexisting initialization");
-        } catch (VoltDB.SimulatedExitException e) {
-            assertEquals(-1, e.getStatus());
-        }
-
-        VoltDB.wasCrashCalled = false;
-        VoltDB.crashMessage = null;
-        serverException.set(null);
-
-        c1 = new Configuration(new String[]{"create", "deployment", legacyDeploymentFH.getPath(), "host", "localhost"});
-        server = new ServerThread(c1);
-        server.setUncaughtExceptionHandler(handleUncaught);
-
-        server.start();
-        server.join();
-
-        assertNotNull(serverException.get());
-        assertTrue(serverException.get() instanceof AssertionError);
-        assertTrue(VoltDB.wasCrashCalled);
-        assertTrue(VoltDB.crashMessage.contains("Cannot use legacy start action"));
-
-        if (!c1.m_isEnterprise) return;
-
-        clearCrash();
-
-        c1 = new Configuration(new String[]{"recover", "deployment", legacyDeploymentFH.getPath(), "host", "localhost"});
-        server = new ServerThread(c1);
-        server.setUncaughtExceptionHandler(handleUncaught);
-
-        server.start();
-        server.join();
-
-        assertNotNull(serverException.get());
-        assertTrue(serverException.get() instanceof AssertionError);
-        assertTrue(VoltDB.wasCrashCalled);
-        assertTrue(VoltDB.crashMessage.contains("Cannot use legacy start action"));
-
-        // this test which action should be considered legacy
-        EnumSet<StartAction> legacyOnes = EnumSet.complementOf(EnumSet.of(StartAction.INITIALIZE,StartAction.PROBE, StartAction.GET));
-        assertTrue(legacyOnes.stream().allMatch(StartAction::isLegacy));
     }
 
     /*

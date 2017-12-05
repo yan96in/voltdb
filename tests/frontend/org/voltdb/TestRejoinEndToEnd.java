@@ -139,15 +139,11 @@ public class TestRejoinEndToEnd extends RejoinTestBase {
         ServerThread localServer = null;
         try {
             VoltDB.Configuration config = new VoltDB.Configuration(LocalCluster.portGenerator);
-            config.m_startAction = cluster.isNewCli() ? StartAction.PROBE : StartAction.REJOIN;
+            config.m_startAction = StartAction.PROBE;
             config.m_pathToCatalog = Configuration.getPathToCatalogForTest("rejoin.jar");
-            if (cluster.isNewCli()) {
-                config.m_voltdbRoot = new File(cluster.getServerSpecificRoot("0"));
-                config.m_forceVoltdbCreate = false;
-                config.m_hostCount = 3;
-            } else {
-                config.m_pathToDeployment = Configuration.getPathToCatalogForTest("rejoin.xml");
-            }
+            config.m_voltdbRoot = new File(cluster.getServerSpecificRoot("0"));
+            config.m_forceVoltdbCreate = false;
+            config.m_hostCount = 3;
             config.m_leader = ":" + cluster.internalPort(1);
             config.m_coordinators = cluster.coordinators(1);
             config.m_isRejoinTest = true;
@@ -384,15 +380,11 @@ public class TestRejoinEndToEnd extends RejoinTestBase {
         Thread.sleep(100);
 
         VoltDB.Configuration config = new VoltDB.Configuration(LocalCluster.portGenerator);
-        config.m_startAction = cluster.isNewCli() ? StartAction.PROBE : StartAction.REJOIN;
+        config.m_startAction = StartAction.PROBE;
         config.m_pathToCatalog = Configuration.getPathToCatalogForTest("rejoin.jar");
-        if (cluster.isNewCli()) {
-            config.m_voltdbRoot = new File(cluster.getServerSpecificRoot("0"));
-            config.m_forceVoltdbCreate = false;
-            config.m_hostCount = hostCount;
-        } else {
-            config.m_pathToDeployment = Configuration.getPathToCatalogForTest("rejoin.xml");
-        }
+        config.m_voltdbRoot = new File(cluster.getServerSpecificRoot("0"));
+        config.m_forceVoltdbCreate = false;
+        config.m_hostCount = hostCount;
         config.m_leader = ":" + cluster.internalPort(1);
         config.m_coordinators = cluster.coordinators(1);
 
@@ -470,15 +462,11 @@ public class TestRejoinEndToEnd extends RejoinTestBase {
         Thread.sleep(100);
 
         VoltDB.Configuration config = new VoltDB.Configuration(LocalCluster.portGenerator);
-        config.m_startAction = cluster.isNewCli() ? StartAction.PROBE : StartAction.REJOIN;
+        config.m_startAction = StartAction.PROBE;
         config.m_pathToCatalog = Configuration.getPathToCatalogForTest("rejoin.jar");
-        if (cluster.isNewCli()) {
-            config.m_voltdbRoot = new File(cluster.getServerSpecificRoot("0"));
-            config.m_forceVoltdbCreate = false;
-            config.m_hostCount = 3;
-        } else {
-            config.m_pathToDeployment = Configuration.getPathToCatalogForTest("rejoin.xml");
-        }
+        config.m_voltdbRoot = new File(cluster.getServerSpecificRoot("0"));
+        config.m_forceVoltdbCreate = false;
+        config.m_hostCount = 3;
         config.m_leader = ":" + cluster.internalPort(1);
         config.m_coordinators = cluster.coordinators(1);
 
@@ -550,15 +538,11 @@ public class TestRejoinEndToEnd extends RejoinTestBase {
         Thread.sleep(1000);
 
         VoltDB.Configuration config = new VoltDB.Configuration(LocalCluster.portGenerator);
-        config.m_startAction = cluster.isNewCli() ? StartAction.PROBE : StartAction.REJOIN;
+        config.m_startAction = StartAction.PROBE;
         config.m_pathToCatalog = Configuration.getPathToCatalogForTest("rejoin.jar");
-        if (cluster.isNewCli()) {
-            config.m_voltdbRoot = new File(cluster.getServerSpecificRoot("0"));
-            config.m_forceVoltdbCreate = false;
-            config.m_hostCount = 3;
-        } else {
-            config.m_pathToDeployment = Configuration.getPathToCatalogForTest("rejoin.xml");
-        }
+        config.m_voltdbRoot = new File(cluster.getServerSpecificRoot("0"));
+        config.m_forceVoltdbCreate = false;
+        config.m_hostCount = 3;
         config.m_leader = ":" + cluster.internalPort(1);
         config.m_coordinators = cluster.coordinators(1);
 
@@ -695,8 +679,6 @@ public class TestRejoinEndToEnd extends RejoinTestBase {
         assertTrue(success);
         MiscUtils.copyFile(builder.getPathToDeployment(), Configuration.getPathToCatalogForTest("rejoin.xml"));
         cluster.setHasLocalServer(false);
-        //Test that use Snapshot needs VoltFile magic.
-        cluster.setNewCli(false);
         // start a 2 node k=1 cluster
         cluster.startUp();
 
@@ -827,15 +809,11 @@ public class TestRejoinEndToEnd extends RejoinTestBase {
         client.close();
 
         VoltDB.Configuration config = new VoltDB.Configuration(LocalCluster.portGenerator);
-        config.m_startAction = cluster.isNewCli() ? StartAction.PROBE : StartAction.REJOIN;
+        config.m_startAction = StartAction.PROBE;
         config.m_pathToCatalog = Configuration.getPathToCatalogForTest("rejoin.jar");
-        if (cluster.isNewCli()) {
-            config.m_voltdbRoot = new File(cluster.getServerSpecificRoot("0"));
-            config.m_forceVoltdbCreate = false;
-            config.m_hostCount = hostCount;
-        } else {
-            config.m_pathToDeployment = Configuration.getPathToCatalogForTest("rejoin.xml");
-        }
+        config.m_voltdbRoot = new File(cluster.getServerSpecificRoot("0"));
+        config.m_forceVoltdbCreate = false;
+        config.m_hostCount = hostCount;
         config.m_leader = ":" + cluster.internalPort(1);
         config.m_coordinators = cluster.coordinators(1);
 
@@ -930,15 +908,11 @@ public class TestRejoinEndToEnd extends RejoinTestBase {
         Thread.sleep(100);
 
         VoltDB.Configuration config = new VoltDB.Configuration(LocalCluster.portGenerator);
-        config.m_startAction = cluster.isNewCli() ? StartAction.PROBE : StartAction.REJOIN;
+        config.m_startAction = StartAction.PROBE;
         config.m_pathToCatalog = Configuration.getPathToCatalogForTest("rejoin.jar");
-        if (cluster.isNewCli()) {
-            config.m_voltdbRoot = new File(cluster.getServerSpecificRoot("0"));
-            config.m_forceVoltdbCreate = false;
-            config.m_hostCount = 3;
-        } else {
-            config.m_pathToDeployment = Configuration.getPathToCatalogForTest("rejoin.xml");
-        }
+        config.m_voltdbRoot = new File(cluster.getServerSpecificRoot("0"));
+        config.m_forceVoltdbCreate = false;
+        config.m_hostCount = 3;
         config.m_leader = ":" + cluster.internalPort(1);
         config.m_coordinators = cluster.coordinators(1);
 
@@ -1023,15 +997,11 @@ public class TestRejoinEndToEnd extends RejoinTestBase {
         Thread.sleep(100);
 
         VoltDB.Configuration config = new VoltDB.Configuration(LocalCluster.portGenerator);
-        config.m_startAction = cluster.isNewCli() ? StartAction.PROBE : StartAction.REJOIN;
+        config.m_startAction = StartAction.PROBE;
         config.m_pathToCatalog = Configuration.getPathToCatalogForTest("rejoin.jar");
-        if (cluster.isNewCli()) {
-            config.m_voltdbRoot = new File(cluster.getServerSpecificRoot("0"));
-            config.m_forceVoltdbCreate = false;
-            config.m_hostCount = 3;
-        } else {
-            config.m_pathToDeployment = Configuration.getPathToCatalogForTest("rejoin.xml");
-        }
+        config.m_voltdbRoot = new File(cluster.getServerSpecificRoot("0"));
+        config.m_forceVoltdbCreate = false;
+        config.m_hostCount = 3;
         config.m_leader = ":" + cluster.internalPort(1);
         config.m_coordinators = cluster.coordinators(1);
 

@@ -86,12 +86,7 @@ public class TestExportRejoin extends TestExportBaseSocketExport {
         ((LocalCluster) m_config).killSingleHost(1);
         Thread.sleep(500);
         File exportOverflowDir;
-        if (((LocalCluster )m_config).isNewCli()) {
-            exportOverflowDir = new File(((LocalCluster )m_config).getServerSpecificRoot("1") + "/export_overflow");
-        } else {
-              exportOverflowDir  = new File(((LocalCluster) m_config).getSubRoots().get(1),
-                        "/tmp/" + System.getProperty("user.name") + "/export_overflow");
-        }
+        exportOverflowDir = new File(((LocalCluster )m_config).getServerSpecificRoot("1") + "/export_overflow");
         File files[] = exportOverflowDir.listFiles();
         long modifiedTimes[] = new long[files.length];
         int ii = 0;

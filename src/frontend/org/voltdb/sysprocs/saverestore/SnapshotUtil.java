@@ -1648,9 +1648,6 @@ public class SnapshotUtil {
             JSONObject jsObj = new JSONObject();
             try {
                 jsObj.put(SnapshotUtil.JSON_PATH, params[0]);
-                if (VoltDB.instance().isRunningWithOldVerbs()) {
-                    jsObj.put(SnapshotUtil.JSON_PATH_TYPE, SnapshotPathType.SNAP_PATH);
-                }
                 jsObj.put(SnapshotUtil.JSON_NONCE, params[1]);
                 jsObj.put(SnapshotUtil.JSON_DUPLICATES_PATH, params[0]);
             } catch (JSONException e) {

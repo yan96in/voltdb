@@ -124,7 +124,6 @@ public class TestLargeBlockManagerStartUpSuite extends RegressionSuite {
 
         config = new LocalCluster("testLargeBlockManagerStartUpSuite-onesite.jar", 3, 1, 0, BackendTarget.NATIVE_EE_JNI);
         config.setHasLocalServer(false);
-        config.setNewCli(true);
         success = config.compile(project);
         assert(success);
         builder.addServerConfig(config);
@@ -133,7 +132,6 @@ public class TestLargeBlockManagerStartUpSuite extends RegressionSuite {
         // (Use a different number of sites per host so junit method names are distinct)
         config = new LocalCluster("testLargeBlockManagerStartUpSuite-onesite-oldCli.jar", 1, 1, 0, BackendTarget.NATIVE_EE_JNI);
         config.setHasLocalServer(false);
-        config.setNewCli(false);
         success = config.compile(project);
         assert(success);
         builder.addServerConfig(config);

@@ -348,7 +348,6 @@ public class RealVoltDB implements VoltDBInterface, RestoreAgent.Callback, HostM
     private final ListeningExecutorService m_es = CoreUtils.getCachedSingleThreadExecutor("StartAction ZK Watcher", 15000);
 
     private volatile boolean m_isRunning = false;
-    private boolean m_isRunningWithOldVerb = true;
     private boolean m_isBare = false;
 
     /** Last transaction ID at which the logging config updated.
@@ -365,11 +364,6 @@ public class RealVoltDB implements VoltDBInterface, RestoreAgent.Callback, HostM
     boolean m_durable = false;
 
     private int m_maxThreadsCount;
-
-    @Override
-    public boolean isRunningWithOldVerbs() {
-        return m_isRunningWithOldVerb;
-     };
 
     @Override
     public boolean isPreparingShuttingdown() {
@@ -478,57 +472,36 @@ public class RealVoltDB implements VoltDBInterface, RestoreAgent.Callback, HostM
 
     @Override
     public String getVoltDBRootPath(PathsType.Voltdbroot path) {
-        if (isRunningWithOldVerbs()) {
-           return path.getPath();
-        }
         return getVoltDBRootPath();
     }
 
     @Override
     public String getCommandLogPath(PathsType.Commandlog path) {
-        if (isRunningWithOldVerbs()) {
-           return path.getPath();
-        }
         return m_nodeSettings.resolveToAbsolutePath(m_nodeSettings.getCommandLog()).getPath();
     }
 
     @Override
     public String getCommandLogSnapshotPath(PathsType.Commandlogsnapshot path) {
-        if (isRunningWithOldVerbs()) {
-           return path.getPath();
-        }
         return m_nodeSettings.resolveToAbsolutePath(m_nodeSettings.getCommandLogSnapshot()).getPath();
     }
 
     @Override
     public String getSnapshotPath(PathsType.Snapshots path) {
-        if (isRunningWithOldVerbs()) {
-           return path.getPath();
-        }
         return m_nodeSettings.resolveToAbsolutePath(m_nodeSettings.getSnapshoth()).getPath();
     }
 
     @Override
     public String getExportOverflowPath(PathsType.Exportoverflow path) {
-        if (isRunningWithOldVerbs()) {
-           return path.getPath();
-        }
         return m_nodeSettings.resolveToAbsolutePath(m_nodeSettings.getExportOverflow()).getPath();
     }
 
     @Override
     public String getDROverflowPath(PathsType.Droverflow path) {
-        if (isRunningWithOldVerbs()) {
-           return path.getPath();
-        }
         return m_nodeSettings.resolveToAbsolutePath(m_nodeSettings.getDROverflow()).getPath();
     }
 
     @Override
     public String getLargeQuerySwapPath(PathsType.Largequeryswap path) {
-        if (isRunningWithOldVerbs()) {
-           return path.getPath();
-        }
         return m_nodeSettings.resolveToAbsolutePath(m_nodeSettings.getLargeQuerySwap()).getPath();
     }
 
@@ -599,13 +572,8 @@ public class RealVoltDB implements VoltDBInterface, RestoreAgent.Callback, HostM
             for (String nonEmptyPath : nonEmptyPaths) {
                 crashMessage.append("\n  - " + nonEmptyPath);
             }
-            if (config.m_startAction.isLegacy()) {
-                crashMessage.append("\nUse the recover command to restore the previous database or use create --force" +
-                    " to start a new database session overwriting existing files.");
-            } else {
-                crashMessage.append("\nUse start to restore the previous database or use init --force" +
-                    " to start a new database session overwriting existing files.");
-            }
+            crashMessage.append("\nUse start to restore the previous database or use init --force" +
+                " to start a new database session overwriting existing files.");
             VoltDB.crashLocalVoltDB(crashMessage.toString());
         }
     }
@@ -786,8 +754,6 @@ public class RealVoltDB implements VoltDBInterface, RestoreAgent.Callback, HostM
             ModuleManager.resetCacheRoot();
             CipherExecutor.SERVER.shutdown();
 
-            m_isRunningWithOldVerb = config.m_startAction.isLegacy();
-
             // check that this is a 64 bit VM
             if (System.getProperty("java.vm.name").contains("64") == false) {
                 hostLog.fatal("You are running on an unsupported (probably 32 bit) JVM. Exiting.");
@@ -893,47 +859,15 @@ public class RealVoltDB implements VoltDBInterface, RestoreAgent.Callback, HostM
                 consoleLog.info("Initialized VoltDB root directory " + config.m_voltdbRoot.getPath());
                 VoltDB.exit(0);
             }
-            if (config.m_startAction.isLegacy()) {
-                consoleLog.warn("The \"" + config.m_startAction.m_verb + "\" command is deprecated, please use \"init\" and \"start\" for your cluster operations.");
-            }
 
             // config UUID is part of the status tracker.
             m_statusTracker = new NodeStateTracker();
             final File stagedCatalogLocation = new VoltFile(RealVoltDB.getStagedCatalogPath(config.m_voltdbRoot.getAbsolutePath()));
 
-            if (config.m_startAction.isLegacy()) {
-                File rootFH = CatalogUtil.getVoltDbRoot(readDepl.deployment.getPaths());
-                File inzFH = new VoltFile(rootFH, VoltDB.INITIALIZED_MARKER);
-                if (inzFH.exists()) {
-                    VoltDB.crashLocalVoltDB("Cannot use legacy start action "
-                            + config.m_startAction + " on voltdbroot "
-                            + rootFH + " that was initialized with the init command");
-                    return;
-                }
-                //Case where you give primed deployment with -d look in ../../ for initialized marker.
-                //Also check if parents are config and voltdbroot
-                File cfile = (new File(config.m_pathToDeployment)).getParentFile();
-                if (cfile != null) {
-                    rootFH = cfile.getParentFile();
-                    if ("config".equals(cfile.getName()) && VoltDB.DBROOT.equals(rootFH.getName())) {
-                        inzFH = new VoltFile(rootFH, VoltDB.INITIALIZED_MARKER);
-                        if (inzFH.exists()) {
-                            VoltDB.crashLocalVoltDB("Can not use legacy start action "
-                                    + config.m_startAction + " on voltdbroot "
-                                    + rootFH + " that was initialized with the init command");
-                            return;
-                        }
-                    }
-                }
-                if (stagedCatalogLocation.isFile()) {
-                    hostLog.warn("Initialized schema is present, but is being ignored and may be removed.");
-                }
-            } else {
-                assert (config.m_startAction == StartAction.PROBE);
-                if (stagedCatalogLocation.isFile()) {
-                    assert (config.m_pathToCatalog == null) : config.m_pathToCatalog;
-                    config.m_pathToCatalog = stagedCatalogLocation.getAbsolutePath();
-                }
+            assert (config.m_startAction == StartAction.PROBE);
+            if (stagedCatalogLocation.isFile()) {
+                assert (config.m_pathToCatalog == null) : config.m_pathToCatalog;
+                config.m_pathToCatalog = stagedCatalogLocation.getAbsolutePath();
             }
 
             List<String> failed = m_nodeSettings.ensureDirectoriesExist();
@@ -2550,21 +2484,6 @@ public class RealVoltDB implements VoltDBInterface, RestoreAgent.Callback, HostM
         }
     }
 
-
-    @Override
-    public void loadLegacyPathProperties(DeploymentType deployment) throws IOException {
-        //Load deployment paths now if Legacy so that we access through the interface all the time.
-        if (isRunningWithOldVerbs() && m_nodeSettings == null) {
-            m_nodeSettings = NodeSettings.create(CatalogUtil.asNodeSettingsMap(deployment));
-            List<String> failed = m_nodeSettings.ensureDirectoriesExist();
-            if (!failed.isEmpty()) {
-                String msg = "Unable to validate path settings:\n  " +
-                        Joiner.on("\n  ").join(failed);
-                hostLog.fatal(msg);
-                throw new IOException(msg);
-            }
-        }
-    }
 
     static class ReadDeploymentResults {
         final byte [] deploymentBytes;

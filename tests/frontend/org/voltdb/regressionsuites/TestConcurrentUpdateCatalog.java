@@ -198,7 +198,6 @@ public class TestConcurrentUpdateCatalog {
 
         cluster = new LocalCluster("concurrentCatalogUpdate-cluster-base.jar",
                                                 SITES_PER_HOST, HOSTS, K, BackendTarget.NATIVE_EE_JNI);
-        cluster.setNewCli(true);
         cluster.setHasLocalServer(false);
         assertTrue(cluster.compile(builder));
 

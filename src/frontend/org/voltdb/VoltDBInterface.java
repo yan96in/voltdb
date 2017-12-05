@@ -24,7 +24,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.voltcore.messaging.HostMessenger;
-import org.voltdb.compiler.deploymentfile.DeploymentType;
 import org.voltdb.compiler.deploymentfile.PathsType;
 import org.voltdb.compiler.deploymentfile.PathsType.Largequeryswap;
 import org.voltdb.dtxn.SiteTracker;
@@ -53,7 +52,6 @@ public interface VoltDBInterface
     public void readBuildInfo(String editionTag);
 
     public CommandLog getCommandLog();
-    public boolean isRunningWithOldVerbs();
 
     public String getVoltDBRootPath(PathsType.Voltdbroot path);
     public String getCommandLogPath(PathsType.Commandlog path);
@@ -131,7 +129,6 @@ public interface VoltDBInterface
     public String getLocalMetadata();
     public SiteTracker getSiteTrackerForSnapshot();
     public Cartographer getCartograhper();
-    public void loadLegacyPathProperties(DeploymentType deployment) throws IOException;
 
     /**
      * Update the global logging context in the server.

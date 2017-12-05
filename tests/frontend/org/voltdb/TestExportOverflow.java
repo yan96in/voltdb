@@ -24,7 +24,6 @@
 package org.voltdb;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -87,13 +86,7 @@ public class TestExportOverflow extends RegressionSuite {
         }
         client.drain();
         File overflowDir;
-        boolean newCli = ((LocalCluster)m_config).isNewCli();
-        if (newCli) {
-            overflowDir = new File(((LocalCluster)m_config).getServerSpecificRoot("0") + "/export_overflow");
-        } else {
-            ArrayList<File> subroots = ((LocalCluster) m_config).getSubRoots();
-            overflowDir = findExportOverflowDir(subroots.get(0));
-        }
+        overflowDir = new File(((LocalCluster)m_config).getServerSpecificRoot("0") + "/export_overflow");
         String[] oldOverflowFiles = overflowDir.list();
         assertTrue(oldOverflowFiles.length>0);
 
@@ -126,8 +119,6 @@ public class TestExportOverflow extends RegressionSuite {
         LocalCluster config = new LocalCluster("export-overflow-test.jar", 1, 1, 0,
                 BackendTarget.NATIVE_EE_JNI, LocalCluster.FailureState.ALL_RUNNING, true, false, additionalEnv);
         config.setHasLocalServer(false);
-        // This is only for testing create --force.
-        config.setNewCli(false);
         boolean compile = config.compile(project);
         assertTrue(compile);
         builder.addServerConfig(config);

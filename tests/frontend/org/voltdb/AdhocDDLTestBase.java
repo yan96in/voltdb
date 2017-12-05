@@ -25,6 +25,7 @@ package org.voltdb;
 
 import org.json_voltpatches.JSONException;
 import org.json_voltpatches.JSONObject;
+import org.voltdb.VoltDB.SimulatedExitException;
 import org.voltdb.client.Client;
 import org.voltdb.client.ClientConfig;
 import org.voltdb.client.ClientFactory;
@@ -50,6 +51,15 @@ public class AdhocDDLTestBase extends JUnit4LocalClusterTest {
 
     protected void startServer(VoltDB.Configuration config) throws Exception
     {
+        config.m_startAction = StartAction.INITIALIZE;
+        ServerThread iserver = new ServerThread(config);
+        try {
+            iserver.initialize();
+        } catch (SimulatedExitException ex) {
+            ;
+        }
+
+        config.m_startAction = StartAction.PROBE;
         m_localServer = new ServerThread(config);
         m_localServer.start();
         m_localServer.waitForInitialization();

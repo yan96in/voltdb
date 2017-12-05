@@ -250,10 +250,8 @@ public abstract class UpdateApplicationBase extends VoltNTSystemProcedure {
                 return retval;
             }
 
-            //In non legacy mode discard the path element.
-            if (!VoltDB.instance().isRunningWithOldVerbs()) {
-                dt.setPaths(null);
-            }
+            //Discard the path element we dont change them on the fly.
+            dt.setPaths(null);
 
             //Always get deployment after its adjusted.
             String newDeploymentString = CatalogUtil.getDeployment(dt, true);

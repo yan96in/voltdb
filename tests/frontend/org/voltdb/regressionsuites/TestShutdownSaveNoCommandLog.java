@@ -29,7 +29,6 @@ import java.io.FileFilter;
 import java.io.FileReader;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.voltdb.BackendTarget;
@@ -137,9 +136,6 @@ public class TestShutdownSaveNoCommandLog extends RegressionSuite
             assertTrue("(" + i + ") snapshot did not finish " + Arrays.asList(finished),
                     finished.length == 1 && finished[0].exists() && finished[0].isFile());
         }
-        if (!cluster.isNewCli()) {
-            cluster.overrideStartCommandVerb("recover");
-        }
         m_config.startUp(false);
         client2 = this.getClient();
 
@@ -166,12 +162,7 @@ public class TestShutdownSaveNoCommandLog extends RegressionSuite
     }
 
     static File getSnapshotPathForHost(LocalCluster cluster, int hostId) {
-        if (cluster.isNewCli()) {
-            return new File(cluster.getServerSpecificRoot(Integer.toString(hostId)), "snapshots");
-        } else {
-            List<File> subRoots = cluster.getSubRoots();
-            return new File (subRoots.get(hostId), "/tmp/" + System.getProperty("user.name") + "/snapshots");
-        }
+        return new File(cluster.getServerSpecificRoot(Integer.toString(hostId)), "snapshots");
     }
     static int HOST_COUNT = 3;
 

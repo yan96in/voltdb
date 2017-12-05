@@ -161,8 +161,6 @@ public class TestExportSnapshot extends TestExportBaseSocketExport {
          */
         config = new LocalCluster("export-ddl-cluster-rep.jar", 2, 3, k_factor,
                 BackendTarget.NATIVE_EE_JNI, LocalCluster.FailureState.ALL_RUNNING, true, false, additionalEnv);
-        //TODO: Update after fixing Snapshot on same server
-        config.setNewCli(false);
         config.setHasLocalServer(false);
         config.setMaxHeap(1024);
         boolean compile = config.compile(project);
@@ -175,8 +173,6 @@ public class TestExportSnapshot extends TestExportBaseSocketExport {
          */
         config = new LocalCluster("export-ddl-sans-nonulls.jar", 2, 3, k_factor,
                 BackendTarget.NATIVE_EE_JNI, LocalCluster.FailureState.ALL_RUNNING, true, false, additionalEnv);
-        //TODO: Update after fixing Snapshot on same server
-        config.setNewCli(false);
         config.setHasLocalServer(false);
         config.setMaxHeap(1024);
         project = new VoltProjectBuilder();
@@ -197,8 +193,6 @@ public class TestExportSnapshot extends TestExportBaseSocketExport {
          */
         config = new LocalCluster("export-ddl-addedtable.jar", 2, 3, k_factor,
                 BackendTarget.NATIVE_EE_JNI, LocalCluster.FailureState.ALL_RUNNING, true, false, additionalEnv);
-        //TODO: Update after fixing Snapshot on same server
-        config.setNewCli(false);
         config.setHasLocalServer(false);
         config.setMaxHeap(1024);
         project = new VoltProjectBuilder();

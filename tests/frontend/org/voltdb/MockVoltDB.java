@@ -23,7 +23,6 @@
 package org.voltdb;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -55,7 +54,6 @@ import org.voltdb.catalog.Column;
 import org.voltdb.catalog.Database;
 import org.voltdb.catalog.Procedure;
 import org.voltdb.catalog.Table;
-import org.voltdb.compiler.deploymentfile.DeploymentType;
 import org.voltdb.compiler.deploymentfile.PathsType;
 import org.voltdb.dtxn.SiteTracker;
 import org.voltdb.iv2.Cartographer;
@@ -378,11 +376,6 @@ public class MockVoltDB implements VoltDBInterface
     }
 
     @Override
-    public boolean isRunningWithOldVerbs() {
-        return voltconfig.m_startAction.isLegacy();
-    }
-
-    @Override
     public void initialize(Configuration config)
     {
         m_noLoadLib = config.m_noLoadLibVOLTDB;
@@ -554,10 +547,6 @@ public class MockVoltDB implements VoltDBInterface
     @Override
     public String getCommandLogPath() {
         return "command_log";
-    }
-
-    @Override
-    public void loadLegacyPathProperties(DeploymentType deployment) throws IOException {
     }
 
     @Override

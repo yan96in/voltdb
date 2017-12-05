@@ -74,7 +74,7 @@ public class TestSaveSnapshotAtDefaultLocation extends RegressionSuite {
         }
         assertNotNull(scanResults);
         System.out.println(scanResults.toFormattedString());
-        assertEquals( m_config.isNewCli() ? 1 : HOSTS, scanResults.getRowCount());
+        assertEquals( 1, scanResults.getRowCount());
         assertEquals( 10, scanResults.getColumnCount());
         scanResults.advanceRow();
         //Make sure nonce has MAGIC in it.
