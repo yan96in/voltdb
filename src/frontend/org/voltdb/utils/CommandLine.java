@@ -111,7 +111,6 @@ public class CommandLine extends VoltDB.Configuration
         cl.rmi_host_name = rmi_host_name;
         cl.log4j = log4j;
         cl.gcRollover = gcRollover;
-        cl.voltFilePrefix = voltFilePrefix;
         cl.initialHeap = initialHeap;
         cl.maxHeap = maxHeap;
         cl.classPath = classPath;
@@ -125,7 +124,6 @@ public class CommandLine extends VoltDB.Configuration
         cl.m_hostCount = m_hostCount;
         cl.m_enableAdd = m_enableAdd;
         cl.m_voltdbRoot = m_voltdbRoot;
-        cl.m_newCli = m_newCli;
         cl.m_sslEnable = m_sslEnable;
         cl.m_sslExternal = m_sslExternal;
         cl.m_placementGroup = m_placementGroup;
@@ -334,14 +332,6 @@ public class CommandLine extends VoltDB.Configuration
     boolean conditionalCardMark = false;
     public CommandLine conditionalCardMark(boolean conditionalCardMark) {
         this.conditionalCardMark = conditionalCardMark;
-        return this;
-    }
-
-    String voltFilePrefix = "";
-    public CommandLine voltFilePrefix(String voltFilePrefix) {
-        if (m_newCli) return this;
-
-        this.voltFilePrefix = voltFilePrefix;
         return this;
     }
 
@@ -582,9 +572,6 @@ public class CommandLine extends VoltDB.Configuration
         if (includeTestOpts)
         {
             cmdline.add("-DLOG_SEGMENT_SIZE=8");
-            if (!m_newCli) {
-                cmdline.add("-DVoltFilePrefix=" + voltFilePrefix);
-            }
             cmdline.add("-ea");
             cmdline.add("-XX:MaxDirectMemorySize=2g");
         }
@@ -1046,13 +1033,6 @@ public class CommandLine extends VoltDB.Configuration
             return sb.toString();
         }
     }
-
-    boolean m_newCli = false;
-    //Return true if we are going to run init and start.
-    boolean isNewCli() {
-        return m_newCli;
-    }
-    public void setNewCli(boolean flag) { m_newCli = flag; };
 
     String m_placementGroup = "";
     public void setPlacementGroup(String placementGroup) {

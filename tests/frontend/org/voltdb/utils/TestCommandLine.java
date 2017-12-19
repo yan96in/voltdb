@@ -72,7 +72,6 @@ public class TestCommandLine
         cl.javaLibraryPath("sweet");
         cl.rmiHostName("springsteen");
         cl.log4j("whats");
-        cl.voltFilePrefix("mine");
         cl.setInitialHeap(470);
         cl.setMaxHeap(740);
         cl.classPath("say");
