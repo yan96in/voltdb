@@ -217,7 +217,7 @@ public class StreamSnapshotWritePlan extends SnapshotWritePlan
                                                srcHSId,
                                                destHSId,
                                                new StreamSnapshotDataTarget(destHSId,
-                                                                            (destHSId == stream.lowestSiteSinkHSId),
+                                                                            (destHSId == stream.lowestSiteSinkHSIds.get(CoreUtils.getHostIdFromHSId(destHSId))),
                                                                             destsByHostId.get(CoreUtils.getHostIdFromHSId(destHSId)),
                                                                             hashinatorConfig, schemas, sender, ackReceiver));
 //                    if (destHSId == stream.lowestSiteSinkHSId) {
@@ -295,7 +295,7 @@ public class StreamSnapshotWritePlan extends SnapshotWritePlan
 
             localStreams.add(new StreamSnapshotRequestConfig.Stream(streamPairs,
                                                                     stream.newPartition,
-                                                                    stream.lowestSiteSinkHSId));
+                                                                    stream.lowestSiteSinkHSIds));
         }
 
         return localStreams;

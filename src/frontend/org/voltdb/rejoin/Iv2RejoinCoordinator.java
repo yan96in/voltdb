@@ -20,6 +20,7 @@ package org.voltdb.rejoin;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -151,7 +152,7 @@ public class Iv2RejoinCoordinator extends JoinCoordinator {
     private String makeSnapshotRequest(Multimap<Long, Long> sourceToDests, Long lowestSiteSinkHSId)
     {
         StreamSnapshotRequestConfig.Stream stream =
-            new StreamSnapshotRequestConfig.Stream(sourceToDests, null, lowestSiteSinkHSId);
+            new StreamSnapshotRequestConfig.Stream(sourceToDests, null, Collections.singletonMap(Integer.parseInt(m_hostId),lowestSiteSinkHSId));
         StreamSnapshotRequestConfig config =
             new StreamSnapshotRequestConfig(SnapshotUtil.getTablesToSave(m_catalog), Arrays.asList(stream), false);
         return makeSnapshotRequest(config);

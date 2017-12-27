@@ -18,6 +18,7 @@
 package org.voltdb.sysprocs.saverestore;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -48,18 +49,18 @@ public class StreamSnapshotRequestConfig extends SnapshotRequestConfig {
         // the partition the ranges associate to
         public final Integer newPartition;
 
-        public final Long lowestSiteSinkHSId;
+        public final Map<Integer, Long> lowestSiteSinkHSIds;
 
         /**
          * @param streamPairs     src - > (dest1, dest2,...)
          * @param newPartition    New partition for this stream, if not null, will create a
          *                        post-snapshot task to increment the partition count
          */
-        public Stream(Multimap<Long, Long> streamPairs, Integer newPartition, Long lowestSiteSinkHSId)
+        public Stream(Multimap<Long, Long> streamPairs, Integer newPartition, Map<Integer, Long> lowestSiteSinkHSIds)
         {
             this.streamPairs = ImmutableMultimap.copyOf(streamPairs);
             this.newPartition = newPartition;
-            this.lowestSiteSinkHSId = lowestSiteSinkHSId;
+            this.lowestSiteSinkHSIds = lowestSiteSinkHSIds;
         }
     }
 
@@ -106,9 +107,20 @@ public class StreamSnapshotRequestConfig extends SnapshotRequestConfig {
                 if (!streamObj.isNull("newPartition")) {
                     newPartition = Integer.parseInt(streamObj.getString("newPartition"));
                 }
-                Long lowestSiteSinkHSId = Long.parseLong(streamObj.getString("lowestSiteSinkHSId"));
 
-                Stream config = new Stream(parseStreamPairs(streamObj), newPartition, lowestSiteSinkHSId);
+                Map<Integer, Long> lowestSiteSinkHSIds = new HashMap<>();
+                JSONArray lowestSiteSinkHSIdArray = streamObj.getJSONArray("lowestSiteSinkHSIds");
+                for (int j = 0; j < lowestSiteSinkHSIdArray.length(); j++) {
+                    JSONObject nodeSinks = lowestSiteSinkHSIdArray.getJSONObject(j);
+                    Iterator keysIter = nodeSinks.keys();
+                    while (keysIter.hasNext()) {
+                        String hsIdStr = (String) keysIter.next();
+                        long sinkHSId = nodeSinks.getLong(hsIdStr);
+                        lowestSiteSinkHSIds.put(Integer.parseInt(hsIdStr), sinkHSId);
+                    }
+                }
+
+                Stream config = new Stream(parseStreamPairs(streamObj), newPartition, lowestSiteSinkHSIds);
 
                 builder.add(config);
             }
@@ -158,7 +170,15 @@ public class StreamSnapshotRequestConfig extends SnapshotRequestConfig {
             stringer.keySymbolValuePair("newPartition", stream.newPartition == null ?
                                                null : Integer.toString(stream.newPartition));
 
-            stringer.keySymbolValuePair("lowestSiteSinkHSId", stream.lowestSiteSinkHSId);
+            stringer.key("lowestSiteSinkHSIds").array();
+            for (Map.Entry<Integer, Long> entry : stream.lowestSiteSinkHSIds.entrySet()) {
+                stringer.object();
+                stringer.key(entry.getKey().toString());
+                stringer.value(entry.getValue().toString());
+                stringer.endObject();
+            }
+            stringer.endArray();
+
             stringer.key("streamPairs").object();
             for (Map.Entry<Long, Collection<Long>> entry : stream.streamPairs.asMap().entrySet()) {
                 stringer.key(Long.toString(entry.getKey())).array();
