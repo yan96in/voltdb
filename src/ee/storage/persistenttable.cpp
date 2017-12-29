@@ -1571,6 +1571,12 @@ bool PersistentTable::activateStream(
         partitionId = -1;
     }
     assert(m_tableStreamer == NULL || partitionId == m_tableStreamer->getPartitionID());
+    if (m_tableStreamer != NULL) {
+        // VOLT_DEBUG(m_tableStreamer.hasStreamType(TableStreamType.TABLE_STREAM_SNAPSHOT);
+        std::cout << "Table Streamer Type:"<< m_tableStreamer->hasStreamType(TABLE_STREAM_SNAPSHOT) <<  " PartitionID :" << m_tableStreamer->getPartitionID() <<  " partitionId: " << partitionId << std::endl;
+        assert(partitionId == m_tableStreamer->getPartitionID());
+    }
+
     if (m_tableStreamer == NULL) {
         m_tableStreamer.reset(new TableStreamer(partitionId, *this, tableId));
     }
