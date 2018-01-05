@@ -427,7 +427,7 @@ public class TestCommonTableExpressionsSuite extends RegressionSuite {
                 vt);
     }
 
-    public void testRuntimeErrors() throws Exception {
+    public void notestRuntimeErrors() throws Exception {
         Client client = getClient();
 
         insertEmployees(client, "R_EMPLOYEES");
@@ -462,6 +462,64 @@ public class TestCommonTableExpressionsSuite extends RegressionSuite {
                 + ") "
                 + "SELECT * FROM RCTE; ";
         verifyStmtFails(client, query, "Attempted to divide 100 by 0");
+    }
+
+    public void testNonRecursiveSetOps() throws Exception {
+        Client client = getClient();
+
+        insertEmployees(client, "R_EMPLOYEES");
+
+        // Check that UNION ALL behaves in the traditional way
+        String query = "WITH RCTE (LAST_NAME) AS ( "
+                + "  SELECT LAST_NAME "
+                + "  FROM R_EMPLOYEES  "
+                + "  WHERE LAST_NAME IN ('Bloom', 'Fox') "
+                + "UNION ALL "
+                + "  SELECT LAST_NAME "
+                + "  FROM R_EMPLOYEES  "
+                + "  WHERE EMP_ID IN (170, 173) "
+                + ") "
+                + "SELECT * FROM RCTE ORDER BY LAST_NAME; ";
+        ClientResponse cr = client.callProcedure("@AdHoc", query);
+        assertEquals(ClientResponse.SUCCESS, cr.getStatus());
+        VoltTable vt = cr.getResults()[0];
+        assertContentOfTable(new Object[][] {
+            {"Bloom"}, {"Fox"}, {"Fox"}, {"Kumar"}},
+                vt);
+
+        // UNION with no ALL---dupes removed
+        query = "WITH RCTE (LAST_NAME) AS ( "
+                + "  SELECT LAST_NAME "
+                + "  FROM R_EMPLOYEES  "
+                + "  WHERE LAST_NAME IN ('Bloom', 'Fox') "
+                + "UNION "
+                + "  SELECT LAST_NAME "
+                + "  FROM R_EMPLOYEES  "
+                + "  WHERE EMP_ID IN (170, 173) "
+                + ") "
+                + "SELECT * FROM RCTE ORDER BY LAST_NAME; ";
+        cr = client.callProcedure("@AdHoc", query);
+        assertEquals(ClientResponse.SUCCESS, cr.getStatus());
+        vt = cr.getResults()[0];
+        assertContentOfTable(new Object[][] {
+            {"Bloom"}, {"Fox"}, {"Kumar"}},
+                vt);
+
+        // INTERSECT
+        query = "WITH RCTE (LAST_NAME) AS ( "
+                + "  SELECT LAST_NAME "
+                + "  FROM R_EMPLOYEES  "
+                + "  WHERE LAST_NAME IN ('Bloom', 'Fox') "
+                + "INTERSECT "
+                + "  SELECT LAST_NAME "
+                + "  FROM R_EMPLOYEES  "
+                + "  WHERE EMP_ID IN (170, 173) "
+                + ") "
+                + "SELECT * FROM RCTE ORDER BY LAST_NAME; ";
+        cr = client.callProcedure("@AdHoc", query);
+        assertEquals(ClientResponse.SUCCESS, cr.getStatus());
+        vt = cr.getResults()[0];
+        assertContentOfTable(new Object[][] {{"Fox"}}, vt);
     }
 
     static public junit.framework.Test suite() {
